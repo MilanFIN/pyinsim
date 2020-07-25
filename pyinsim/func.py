@@ -9,7 +9,7 @@
 import re
 import math
 
-import strmanip
+from .strmanip import *
 
 __all__ = ['deg', 'dist', 'fromunicode', 'intersects', 'km', 'kph', 'length', 'miles', 'mph', 'mps', 'rad', 'rpm', 'stripcols', 'time', 'timestr', 'tounicode']
 

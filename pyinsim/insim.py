@@ -951,7 +951,7 @@ LCS_Mask_Siren = 0x300000       # bits  20-21 (Switches & 0x300000) - Siren   (0
 
 
 def _eat_null_chars(str_):
-    return str_.rstrip('\x00')
+    return str_.rstrip(b'\x00')
 
 
 class IS_ISI(object):
@@ -979,12 +979,14 @@ class IS_ISI(object):
         self.UDPPort = UDPPort
         self.Flags = Flags
         self.InSimVer = INSIM_VERSION
-        self.Prefix = Prefix
+        self.Prefix = bytes(Prefix, "latin-1")
         self.Interval = Interval
-        self.Admin = Admin
-        self.IName = IName
+        self.Admin = bytes(Admin, "latin-1")
+        self.IName = bytes(IName, "latin-1")   
     def pack(self):
-        return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Zero, self.UDPPort, self.Flags, self.InSimVer, self.Prefix, self.Interval, self.Admin, self.IName)
+
+        return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Zero, self.UDPPort, self.Flags, self.InSimVer, self.Prefix, self.Interval, self.Admin, self.IName).decode("latin-1")
+
 
 class IS_VER(object):
     """VERsion.
@@ -1092,7 +1094,7 @@ class IS_SCH(object):
         self.Type = ISP_SCH
         self.ReqI = ReqI
         self.Zero = 0
-        self.CharB = CharB
+        self.CharB = bytes(CharB, "latin-1")
         self.Flags = Flags
         self.Spare2 = 0
         self.Spare3 = 0
@@ -1240,9 +1242,9 @@ class IS_MST(object):
         self.Type = ISP_MST
         self.ReqI = ReqI
         self.Zero = 0
-        self.Msg = Msg
+        self.Msg = bytes(Msg, "latin-1")
     def pack(self):
-        return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Zero, self.Msg)
+        return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Zero, self.Msg).decode()
 
 class IS_MTC(object):
     """Msg To Connection - hosts only - send to a connection or a player
@@ -1579,7 +1581,7 @@ class IS_REO(object):
         return self.pack_s.pack(self.Size, self.Type, self.ReqI, len(self.PLID)) + plid
     def unpack(self, data):
         self.Size, self.Type, self.ReqI, self.NumP = self.pack_s.unpack(data[:4])
-        self.PLID = [ord(data[4+i]) for i in xrange(self.NumP)]
+        self.PLID = [data[4+i] for i in range(self.NumP)]
         return self
 
 class IS_NLP(object):
@@ -1590,7 +1592,7 @@ class IS_NLP(object):
     def unpack(self, data):
         self.Size, self.Type, self.ReqI, self.NumP = self.pack_s.unpack(data[:4])
         data = data[4:]
-        self.Info = [NodeLap(data, i) for i in xrange(0, self.NumP * 6, 6)]
+        self.Info = [NodeLap(data, i) for i in range(0, self.NumP * 6, 6)]
         return self
 
 class NodeLap(object):
@@ -1612,7 +1614,7 @@ class IS_MCI(object):
     def unpack(self, data):
         self.Size, self.Type, self.ReqI, self.NumC = self.pack_s.unpack(data[:4])
         data = data[4:]
-        self.Info = [CompCar(data, i) for i in xrange(0, self.NumC * 28, 28)]
+        self.Info = [CompCar(data, i) for i in range(0, self.NumC * 28, 28)]
         return self
 
 class CompCar(object):
@@ -1643,7 +1645,7 @@ class IS_MSX(object):
         self.Type = ISP_MSX
         self.ReqI = ReqI
         self.Zero = 0
-        self.Msg = Msg
+        self.Msg = bytes(Msg, "latin-1")
     def pack(self):
         return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Zero, self.Msg)
 
@@ -1665,7 +1667,7 @@ class IS_MSL(object):
         self.Type = ISP_MSL
         self.ReqI = ReqI
         self.Sound = Sound
-        self.Msg = Msg
+        self.Msg = bytes(Msg, "latin-1")
     def pack(self):
         return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Sound, self.Msg)
 
@@ -1815,7 +1817,7 @@ class IS_RIP(object):
         self.Sp3 = 0
         self.CTime = CTime
         self.TTime = TTime
-        self.RName = RName
+        self.RName = bytes(RName, "latin-1")
     def pack(self):
         return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Error, self.MPR, self.Paused, self.Options, self.Sp3, self.CTime, self.TTime, self.RName)
     def unpack(self, data):
@@ -1845,7 +1847,7 @@ class IS_SSH(object):
         self.Sp1 = 0
         self.Sp2 = 0
         self.Sp3 = 0
-        self.BMP = BMP
+        self.BMP = bytes(BMP, "latin-1")
     def pack(self):
         return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Error, self.Sp0, self.Sp1, self.Sp2, self.Sp3, self.BMP)
     def unpack(self, data):
@@ -1917,7 +1919,7 @@ class IS_CSC(object):
     pack_s = struct.Struct('8BI4B2h')
     def unpack(self, data):
         self.C = CarContOBJ() # 4B2h
-        self.Size, self.Type, self.ReqI, self.PLID, self.Sp0, self.CSCAction, self.Sp2, self.Sp3, self.Time, self.C.Direction, self.C.Heading, self.C.Speed, self.C.Sp2, self.C.X, self.C.Y = self.pack_s.unpack(data)
+        self.Size, self.Type, self.ReqI, self.PLID, self.Sp0, self.CSCAction, self.Sp2, self.Sp3, self.Time, self.C.Direction, self.C.Heading, self.C.Speed, self.C.Sp2, self.C.X, self.C.Y = self.pack_s.unpack(data[:20])
         return self
 
 CSC_STOP = 0
@@ -2014,15 +2016,16 @@ class IS_AXM(object):
     def unpack(self, data):
         self.Size, self.Type, self.ReqI, self.NumO, self.UCID, self.PMOAction, self.PMOFlags, self.Sp3 = self.pack_s.unpack(data[:8])
         data = data[8:]
-        self.Info = [ObjectInfo(data, i) for i in xrange(0, self.NumO * 8, 8)]
+        self.Info = [ObjectInfo(data, i) for i in range(0, self.NumO * 8, 8)]
         return self
 
 class IS_ACR(object):
     pack_s = struct.Struct('8B')
     def unpack(self, data):
+        #THIS HAS BEEN MODIFIED
         self.Size, self.Type, self.ReqI, self.Zero, self.UCID, self.Admin, self.Result, self.Sp3 = self.pack_s.unpack(data[:8])
-        self.Text = struct.unpack('%dsx' % self.Size - 9, data[8:])
-        self.Text = _eat_null_chars(self.Text)
+        self.Text = data.decode("latin-1")[2:]#struct.unpack('%dsx' % self.Size - 9, data[8:])
+        self.Text = _eat_null_chars(self.Text.encode("latin-1")).decode("latin-1")
         return self
 
 CAR_NONE = 0
@@ -2130,7 +2133,7 @@ class IR_HOS(object):
     def unpack(self, data):
         self.Size, self.Type, self.ReqI, self.NumHosts = self.pack_s.unpack(data[:4])
         data = data[4:]
-        self.Info = [HInfo(data, i) for i in xrange(0, self.NumHosts * 40, 40)]
+        self.Info = [HInfo(data, i) for i in range(0, self.NumHosts * 40, 40)]
         return self
 
 class HInfo(object):
@@ -2147,9 +2150,9 @@ class IR_SEL(object):
         self.Type = IRP_SEL
         self.ReqI = ReqI
         self.Zero = 0
-        self.HName = HName
-        self.Admin = Admin
-        self.Spec = Spec
+        self.HName = bytes(HName, "latin-1")
+        self.Admin = bytes(Admin, "latin-1")
+        self.Spec = bytes(Spec, "latin-1")
     def pack(self):
         return self.pack_s.pack(self.Size, self.Type, self.ReqI, self.Zero, self.HName, self.Admin, self.Spec)
 

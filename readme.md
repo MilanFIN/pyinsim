@@ -1,13 +1,15 @@
 # PYINSIM
 
+NOTE: this is a port of pyinsim from python 2.7->3.8. Some functionality has been tested and verified to be functional, but everything hasn't yet been tested troughoutly. Use at your own caution for now. This readme will be updated when/if this build is confirmed to be stable and function correctly.
+
+
 pyinsim is a InSim module for the Python programming language. It creates 
 socket connection with LFS and provides many classes, functions and 
 enumerations for sending and receiving data between your program and the game.
 
 ## REQUIREMENTS
 
-The module requires Python 2.7 or better to run. Note: It does not currently 
-support Python 3.0. You can download Python from the following URL:
+python 3.8->
 
 http://www.python.org/download/
 

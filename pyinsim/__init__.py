@@ -8,9 +8,10 @@
 
 __version__ = '2.1.0'
 
-from core import *
-from insim import *
-from func import *
+
+from .core import *
+from .insim import *
+from .func import *
 
 __all__ = []
 __all__.extend([c for c in dir(__import__('pyinsim.core'))])

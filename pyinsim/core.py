@@ -14,7 +14,7 @@ import threading
 import time
 
 # Libraries
-import insim as insim_
+from . import insim as insim_
 
 __all__ = [
     'EVT_ALL',
@@ -318,13 +318,13 @@ class _TcpSocket(asyncore.dispatcher):
         return bool(self._send_buff)
     
     def handle_write(self):
-        sent = asyncore.dispatcher.send(self, self._send_buff)
+        sent = asyncore.dispatcher.send(self, self._send_buff.encode("latin-1"))
         self._send_buff = self._send_buff[sent:]
         
     def handle_read(self):
         data = self.recv(_TCP_BUFFER_SIZE)
         if data:
-            self._recv_buff += data
+            self._recv_buff += data.decode("latin-1")
             self._dispatch_to._handle_tcp_read()
             
     def handle_error(self):
@@ -561,7 +561,7 @@ class _InSim(_Binding):
         bound = self._callbacks.get(ptype)
         all_ = self._callbacks.get(EVT_ALL)
         if bound or all_:
-            packet = _PACKET_MAP[ptype]().unpack(data)
+            packet = _PACKET_MAP[ptype]().unpack(data.encode("latin-1"))
             if bound:
                 [c(self, packet) for c in bound]
             if all_:

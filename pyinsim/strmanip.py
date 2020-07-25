@@ -38,7 +38,7 @@ _UNESCAPE_MAP = {
     '^':    '^',
 }
 
-_ESCAPE_MAP = dict([(v, k) for (k, v) in _UNESCAPE_MAP.iteritems()])
+_ESCAPE_MAP = dict([(v, k) for (k, v) in _UNESCAPE_MAP.items()])
 
 
 def toUnicode(str_, default = 'L', cols = True):
